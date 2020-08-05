@@ -19,7 +19,9 @@ Role Variables
 | --------- | ------- | -------- |
 | `UserName`| | Username where config will be copied to|
 | `Location` | Choices:<ul><li>home</li><li>work</li></ul> |Set for customizations I have for work or home.|
+| `PrimaryGroup` | | You only need this if you want to set a group other than users| 
 | `Bashrc` | Choices:<ul><li>yes</li>|Set to yes if you have any bashrc aliased to add, otherwise don't set the variable|
+| `BashCompletion`| Choices:<ul><li>yes</li><li>no</li></ul> | set this if you want bash completion configured |
 
 
 
@@ -33,12 +35,23 @@ Usage
 
 Playbook.yml
 ```
-- hosts:  all
+- hosts: all
   become: true
+  
   roles:
-    - dotfiles
+    - role: dotfiles
       vars:
-        UserName: "testuser"
-        Location: "home"
-        Bashrc: "yes"
+        DotFiles:
+          - UserName: "test"
+          - UserName: "test1"
+            Location: "Work"
+          - UserName: "test2"
+            HomeDir: "/opt/test2"
+            PrimaryGroup: "test"
+          - UserName: "root"
+            HomeDir: "/root"
+            PrimaryGroup: "root"  
+            Bashrc:
+              - alias: "alias some command that should be aliased"
+        BashCompletion: "yes"
 ```
