@@ -1,13 +1,6 @@
 ---
-# tasks file for dotfiles
-#- name: Username is
-  #debug:
-    #msg: "Username is {{UserName}}"
-- name: Bashrc for pi user
-  include: pibashrc.yml
-  when: UserName == "pi"
-- name: Root bashrc
-  include: rootbashrc.yml
-- name: bashrc for "{{UserName}}"
+- name: Bashrc
   include: bashrc.yml
-  when: UserName != "pi" and UserName != "root"
+- name: Bash Completion
+  include: bash_completion.yml
+  when: BashCompletion == "yes"

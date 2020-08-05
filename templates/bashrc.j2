@@ -262,7 +262,7 @@ fi
 #   ---------------------------------------
 #   9.  Work Based Aliases
 #   ---------------------------------------
-{% if Location == "work" %}
+{% if item.Location | default ('home') == "work" %}
 alias mtail='multitail --follow-all -cS syslog /var/log/messages -cS fail2ban /var/log/fail2ban.log -cS sudo /var/tmp/sudo -cS vtssh /var/tmp/ssh  -cS backup /var/log/rsnapshot/rsnapshot.log'
 alias oath='kinit -c /tmp/krb5cc_56827_OATH -f jxpsys@OATH.RIT.EDU ; export KRB5CCNAME=/tmp/krb5cc_56827_OATH'
 alias scard='kinit -c /tmp/krb5cc_56827_SCARD -f jxpsys@SCARD.RIT.EDU ; export KRB5CCNAME=/tmp/krb5cc_56827_SCARD'
@@ -278,8 +278,8 @@ alias simpana='/usr/bin/javaws ~/bin/galaxy.jnlp'
 #   ---------------------------------------
 #   10.  User Defined Aliases
 #   ---------------------------------------
-{% if Bashrc is defined %}
-{% for entry in Bashrc %}
+{% if item.Bashrc is defined %}
+{% for entry in item.Bashrc %}
 {{entry.alias}}
 {% endfor %}
 {%endif%}

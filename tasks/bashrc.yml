@@ -1,48 +1,12 @@
 ---
-
-- name: Check if user {{UserName}} exists
-  action: shell /usr/bin/getent passwd {{UserName}} | /usr/bin/wc -l | tr -d ' '
-  register: user_exist
-  changed_when: false
-
-- name: Get primary group for {{UserName}}
-  shell: /usr/bin/id -gn "{{UserName}}"
-  register: PrimaryGroup
-  when: user_exist.stdout != "0"
-  changed_when: false
-
-- name: copy .bashrc to /home/{{UserName}}
+- name: Copy bashrc to the user home directory
   template:
     src:  bashrc.j2
-    dest: /home/{{UserName}}/.bashrc
-    owner:  "{{UserName}}"
-    group:  "{{ PrimaryGroup.stdout }}"
+    dest: "{{item.HomeDir | default('/home/' + item.UserName)}}/.bashrc"
+    owner:  "{{item.UserName}}"
+    group:  "{{item.PrimaryGroup| default('users')}}"
     backup: no
     mode: 0644
-  when: 
-    - UserName is defined
-    - user_exist.stdout != "0"
-
-- name: Create /etc/bash_completion if it doens't exist
-  template:
-    src: bash_completion.j2
-    dest: /etc/bash_completion
-    owner: 'root'
-    group: 'root'
-    force: no
-    backup: no
-    mode: 0644
-
-#- name: copy .bashrc to {{UserName}} home directory
-  #get_url:
-    #url: "{{BASHRCURL}}"
-    #dest: "/home/{{UserName}}/.bashrc"
-    #owner: "{{UserName}}"
-    #group: "{{PrimaryGroup.stdout}}"
-    #mode: 0544
-    #validate_certs: no
-    #force: yes
-  #when: user_exist.stdout != "0"
-
-
-  
+  with_items: "{{DotFiles}}"
+  loop_control:
+    label: "{{item.UserName}}"  

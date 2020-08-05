@@ -1,0 +1,36 @@
+---
+
+# - name: Check if user exists
+#   action: shell /usr/bin/getent passwd {{UserName}} | /usr/bin/wc -l | tr -d ' '
+#   register: user_exist
+#   changed_when: false
+
+# - name: Get primary group for User
+#   shell: /usr/bin/id -gn "{{UserName}}"
+#   register: PrimaryGroup
+#   when: user_exist.stdout != "0"
+#   changed_when: false
+
+- name: Create /etc/bash_completion if it doens't exist
+  template:
+    src: bash_completion.j2
+    dest: /etc/bash_completion
+    owner: 'root'
+    group: 'root'
+    force: no
+    backup: no
+    mode: 0644
+
+#- name: copy .bashrc to {{UserName}} home directory
+  #get_url:
+    #url: "{{BASHRCURL}}"
+    #dest: "/home/{{UserName}}/.bashrc"
+    #owner: "{{UserName}}"
+    #group: "{{PrimaryGroup.stdout}}"
+    #mode: 0544
+    #validate_certs: no
+    #force: yes
+  #when: user_exist.stdout != "0"
+
+
+  
