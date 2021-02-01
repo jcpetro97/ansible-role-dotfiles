@@ -1,0 +1,12 @@
+---
+- hosts: all
+  become: true
+  roles:
+    - role: dotfiles
+      vars:
+        DotFiles:
+          - UserName: "vagrant"
+            PrimaryGroup: "vagrant"  
+            Bashrc:
+              - alias: "alias .3='cd ../../../'"
+        BashCompletion: "yes"
