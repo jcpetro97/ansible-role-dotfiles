@@ -280,6 +280,6 @@ alias simpana='/usr/bin/javaws ~/bin/galaxy.jnlp'
 #   ---------------------------------------
 {% if item.Bashrc is defined %}
 {% for entry in item.Bashrc %}
-{{entry.alias}}
+alias {{entry.alias}}
 {% endfor %}
 {%endif%}
