@@ -1,3 +1,25 @@
 ---
-  Bashrc: []
-  BashCompletion: []
+dotfiles_repo: "https://gitea.johnpetro.xyz/john/dotfiles"
+dotfiles_repo_version: main
+dotfiles_repo_accept_hostkey: false
+dotfiles_repo_local_destination: "~/Documents/dotfiles"
+
+dotfiles_home: "~"
+dotfiles_homedirfiles:
+  - .bashrc
+  - .gitconfig
+  - .gitconfig-personal
+  - .gitconfig-rit
+  - .vimrc
+
+dotfiles_aliasfiles_all:
+  - bash_aliases_user
+  - bash_aliases_rit
+
+dotfiles_aliases_norit:
+  - bash_aliases_user
+
+dotfiles_work_user: "jxpsys"
+
+DotFiles:
+  - UserName: "root"

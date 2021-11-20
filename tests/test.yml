@@ -1,12 +1,5 @@
 ---
-- hosts: all
-  become: true
+- hosts: localhost
+  remote_user: root
   roles:
-    - role: dotfiles
-      vars:
-        DotFiles:
-          - UserName: "vagrant"
-            PrimaryGroup: "vagrant"  
-            Bashrc:
-              - alias: "alias .3='cd ../../../'"
-        BashCompletion: "yes"
+    - dotfiles

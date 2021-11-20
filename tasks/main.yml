@@ -1,6 +1,69 @@
 ---
-- name: Bashrc
-  include: bashrc.yml
-- name: Bash Completion
-  include: bash_completion.yml
-  when: BashCompletion == "yes"
+- name: Ensure dotfiles repository is cloned locally.
+  git:
+    repo: "{{ dotfiles_repo }}"
+    dest: "{{ dotfiles_repo_local_destination }}"
+    version: "{{ dotfiles_repo_version }}"
+    accept_hostkey: "{{ dotfiles_repo_accept_hostkey }}"
+  become_user: "{{ item.UserName }}"
+  with_items: "{{ DotFiles }}"
+  loop_control:
+    label: "{{ item.UserName }}"
+  register: gitstatus
+  # become: false
+
+- name: Remove existing dotfiles file if a replacement is being linked.
+  file:
+    path: "{{ dotfiles_home }}/{{ item[0] }}"
+    state: absent
+  with_nested:
+    - "{{ dotfiles_homedirfiles }}"
+    - "{{ DotFiles }}"
+  when: gitstatus.changed
+  become_user: "{{ item[1].UserName }}"
+
+- name: Create a .aliases directory
+  file:
+    path: "{{ dotfiles_home }}/.aliases"
+    state: directory
+  when: item.UserName != "root"
+  with_items: "{{ DotFiles }}"
+  loop_control:
+    label: "{{ item.UserName }}"
+  become_user: "{{ item.UserName }}"
+
+- name: Link aliases into .aliases directory | Work
+  file:
+    src: "{{ dotfiles_repo_local_destination }}/.aliases/{{ item[0] }}"
+    dest: "{{ dotfiles_home }}/.aliases/{{ item[0] }}"
+    state: link
+    mode: 0644
+  with_nested:
+    - "{{ dotfiles_aliasfiles_all }}"
+    - "{{ DotFiles }}"
+  become_user: "{{ item[1].UserName }}"
+  when: item[1].UserName != "root" and item[1].UserName == dotfiles_work_user
+
+- name: Link aliases into .aliases directory | Personal
+  file:
+    src: "{{ dotfiles_repo_local_destination }}/.aliases/{{ item[0] }}"
+    dest: "{{ dotfiles_home }}/.aliases/{{ item[0] }}"
+    state: link
+    mode: 0644
+  with_nested:
+    - "{{ dotfiles_aliases_norit }}"
+    - "{{ DotFiles }}"
+  become_user: "{{ item[1].UserName }}"
+  when: item[1].UserName != "root" and item[1].UserName != dotfiles_work_user
+
+- name: Link dotfiles into home directory
+  file:
+    src: "{{ dotfiles_repo_local_destination }}/{{ item[0] }}"
+    dest: "{{ dotfiles_home }}/{{ item[0] }}"
+    state: link
+    mode: 0644
+  with_nested:
+    - "{{ dotfiles_homedirfiles }}"
+    - "{{ DotFiles }}"
+  become_user: "{{ item[1].UserName }}"
+
