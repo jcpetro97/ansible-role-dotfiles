@@ -20,6 +20,7 @@
     - "{{ dotfiles_homedirfiles }}"
     - "{{ DotFiles }}"
   when: gitstatus.changed
+  become: yes
   become_user: "{{ item[1].UserName }}"
 
 - name: Create a .aliases directory
@@ -30,6 +31,7 @@
   with_items: "{{ DotFiles }}"
   loop_control:
     label: "{{ item.UserName }}"
+  become: yes
   become_user: "{{ item.UserName }}"
 
 - name: Link aliases into .aliases directory | Work
@@ -41,6 +43,7 @@
   with_nested:
     - "{{ dotfiles_aliasfiles_all }}"
     - "{{ DotFiles }}"
+  become: yes
   become_user: "{{ item[1].UserName }}"
   when: item[1].UserName != "root" and item[1].UserName == dotfiles_work_user
 
@@ -53,6 +56,7 @@
   with_nested:
     - "{{ dotfiles_aliases_norit }}"
     - "{{ DotFiles }}"
+  become: yes
   become_user: "{{ item[1].UserName }}"
   when: item[1].UserName != "root" and item[1].UserName != dotfiles_work_user
 
@@ -65,5 +69,6 @@
   with_nested:
     - "{{ dotfiles_homedirfiles }}"
     - "{{ DotFiles }}"
+  become: yes  
   become_user: "{{ item[1].UserName }}"
 
