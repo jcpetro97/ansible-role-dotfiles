@@ -13,8 +13,10 @@ dotfiles_homedirfiles:
 dotfiles_aliasfiles_all:
   - bash_aliases_user
   - bash_aliases_rit
+  - bash_aliases_tmux_cssh
 dotfiles_aliases_norit:
   - bash_aliases_user
+  - bash_aliases_tmux_cssh
 dotfiles_work_user: "jxpsys"
 DotFiles:
   - UserName: "root"
