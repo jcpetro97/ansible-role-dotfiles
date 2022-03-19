@@ -17,6 +17,7 @@ dotfiles_aliasfiles_all:
 dotfiles_aliases_norit:
   - bash_aliases_user
   - bash_aliases_tmux_cssh
+  - bash_aliases_docker-registry
 dotfiles_work_user: "jxpsys"
 DotFiles:
   - UserName: "root"
