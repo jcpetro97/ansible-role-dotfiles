@@ -11,7 +11,6 @@
     label: "{{ item.UserName }}"
   register: gitstatus
   # become: false
-
 - name: Remove existing dotfiles file if a replacement is being linked.
   file:
     path: "{{ dotfiles_home }}/{{ item[0] }}"
@@ -21,17 +20,16 @@
     - "{{ DotFiles }}"
   when: gitstatus.changed
   become_user: "{{ item[1].UserName }}"
-
 - name: Create a .aliases directory
   file:
     path: "{{ dotfiles_home }}/.aliases"
     state: directory
+    mode: 0755
   when: item.UserName != "root"
   with_items: "{{ DotFiles }}"
   loop_control:
     label: "{{ item.UserName }}"
   become_user: "{{ item.UserName }}"
-
 - name: Link aliases into .aliases directory | Work
   file:
     src: "{{ dotfiles_repo_local_destination }}/.aliases/{{ item[0] }}"
@@ -43,7 +41,6 @@
     - "{{ DotFiles }}"
   become_user: "{{ item[1].UserName }}"
   when: item[1].UserName != "root" and item[1].UserName == dotfiles_work_user
-
 - name: Link aliases into .aliases directory | Personal
   file:
     src: "{{ dotfiles_repo_local_destination }}/.aliases/{{ item[0] }}"
@@ -55,7 +52,6 @@
     - "{{ DotFiles }}"
   become_user: "{{ item[1].UserName }}"
   when: item[1].UserName != "root" and item[1].UserName != dotfiles_work_user
-
 - name: Link dotfiles into home directory
   file:
     src: "{{ dotfiles_repo_local_destination }}/{{ item[0] }}"
@@ -66,4 +62,3 @@
     - "{{ dotfiles_homedirfiles }}"
     - "{{ DotFiles }}"
   become_user: "{{ item[1].UserName }}"
-

@@ -21,7 +21,7 @@
         state: present
   roles:
     - role: geerlingguy.git
-    - role: dotfiles
+    - role: jcpetro97.dotfiles
       vars:
         DotFiles:
           - UserName: "testuser"
