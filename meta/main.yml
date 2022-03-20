@@ -1,7 +1,7 @@
 galaxy_info:
-  author: John Petro
   description: Grab my dotfiles from github( or gitea) and put them in place on the host.
-
+  role_name: dotfiles
+  author: jcpetro97
   # If the issue tracker for your role is not on github, uncomment the
   # next line and provide a value
   # issue_tracker_url: http://example.com/issue/tracker

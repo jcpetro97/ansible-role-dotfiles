@@ -1,0 +1,28 @@
+---
+- name: Converge
+  hosts: all
+  gather_facts: yes
+  become: true
+  environment:
+     GIT_SSL_NO_VERIFY: 'true'
+
+  # tasks:
+  #   - name: "Include dotfiles"
+  #     include_role:
+  #       name: "dotfiles"
+  pre_tasks:
+    - name: Create test user
+      ansible.builtin.user:
+        name: testuser
+        create_home: yes
+        comment: testuser
+        group: users
+        shell: /bin/bash
+        state: present
+  roles:
+    - role: geerlingguy.git
+    - role: dotfiles
+      vars:
+        DotFiles:
+          - UserName: "testuser"
+          - UserName: "root"

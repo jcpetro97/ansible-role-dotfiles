@@ -1,0 +1,93 @@
+---
+# This is an example playbook to execute Ansible tests.
+
+- name: Verify
+  hosts: all
+  gather_facts: false
+  vars:
+    dotfiles:
+      - .bashrc
+      - .gitconfig
+      - .gitconfig-personal
+      - .gitconfig-rit
+      - .vimrc
+    aliases:
+      - bash_aliases_docker-registry
+      - bash_aliases_tmux_cssh
+      - bash_aliases_user
+
+  tasks:
+    - name: Check root Documents Directory state
+      stat:
+        path: "/root/Documents"
+      register: dotfiles_root_Documents
+    
+    - name: Check testuser Documents Directory state
+      stat:
+        path: "/home/testuser/Documents"
+      register: dotfiles_testuser_Documents
+    
+    - name: Check testuser .aliases Directory state
+      stat:
+        path: "/home/testuser/.aliases"
+      register: dotfiles_testuser_aliasdir
+ 
+    - name: Check root dotfiles state
+      stat:
+        path: "/root/{{ item }}"
+      register: dotfiles_root_symlinks
+      with_items: "{{ dotfiles }}"
+
+    - name: Check testuser dotfiles state
+      stat:
+        path: "/home/testuser/{{ item }}"
+      register: dotfiles_testuser_symlinks
+      with_items: "{{ dotfiles }}"
+
+    - name: Check testuser alias files state
+      stat:
+        path: "/home/testuser/.aliases/{{ item }}"
+      register: dotfiles_testuser_alias_symlinks
+      with_items: "{{ aliases }}"
+
+    - name: Assert that root Documents exist
+      assert:
+        that:
+          - "dotfiles_root_Documents.stat.exists"
+
+    - name: Assert that testuser Documents exist
+      assert:
+        that:
+          - "dotfiles_testuser_Documents.stat.exists"
+   
+    - name: Assert that testuser .aliases exist
+      assert:
+        that:
+          - "dotfiles_testuser_aliasdir.stat.exists"
+
+    - name: Assert that root symlinks exist
+      assert:
+        that:
+          - "item.stat.exists"
+          - "item.stat.islnk"
+      loop_control:
+        label: "{{ item.item }}"
+      with_items: "{{ dotfiles_root_symlinks.results }}"
+
+    - name: Assert that testuser symlinks exist
+      assert:
+        that:
+          - "item.stat.exists"
+          - "item.stat.islnk"
+      loop_control:
+        label: "{{ item.item }}"
+      with_items: "{{ dotfiles_testuser_symlinks.results }}"
+   
+    - name: Assert that testuser alias files exist
+      assert:
+        that:
+          - "item.stat.exists"
+          - "item.stat.islnk"
+      loop_control:
+        label: "{{ item.item }}"
+      with_items: "{{ dotfiles_testuser_alias_symlinks.results }}"
