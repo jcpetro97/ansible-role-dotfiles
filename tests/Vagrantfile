@@ -4,7 +4,7 @@
 Vagrant.configure("2") do |config|
     boxes = [
       { :name => "dotfiles-ubuntu2004", :box => "jcpetro97/ubuntu2004" },
-      { :name => "dotfiles-centos8", :box => "jcpetro97/centos8" }
+      { :name => "dotfiles-rocky8", :box => "jcpetro97/rocky8" }
     ]
     config.vm.provider "virtualbox" do |v|  
       v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]

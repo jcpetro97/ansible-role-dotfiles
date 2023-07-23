@@ -18,55 +18,55 @@
 
   tasks:
     - name: Check root Documents Directory state
-      stat:
+      ansible.builtin.stat:
         path: "/root/Documents"
       register: dotfiles_root_Documents
     
     - name: Check testuser Documents Directory state
-      stat:
+      ansible.builtin.stat:
         path: "/home/testuser/Documents"
       register: dotfiles_testuser_Documents
     
     - name: Check testuser .aliases Directory state
-      stat:
+      ansible.builtin.stat:
         path: "/home/testuser/.aliases"
       register: dotfiles_testuser_aliasdir
  
     - name: Check root dotfiles state
-      stat:
+      ansible.builtin.stat:
         path: "/root/{{ item }}"
       register: dotfiles_root_symlinks
       with_items: "{{ dotfiles }}"
 
     - name: Check testuser dotfiles state
-      stat:
+      ansible.builtin.stat:
         path: "/home/testuser/{{ item }}"
       register: dotfiles_testuser_symlinks
       with_items: "{{ dotfiles }}"
 
     - name: Check testuser alias files state
-      stat:
+      ansible.builtin.stat:
         path: "/home/testuser/.aliases/{{ item }}"
       register: dotfiles_testuser_alias_symlinks
       with_items: "{{ aliases }}"
 
     - name: Assert that root Documents exist
-      assert:
+      ansible.builtin.assert:
         that:
           - "dotfiles_root_Documents.stat.exists"
 
     - name: Assert that testuser Documents exist
-      assert:
+      ansible.builtin.assert:
         that:
           - "dotfiles_testuser_Documents.stat.exists"
    
     - name: Assert that testuser .aliases exist
-      assert:
+      ansible.builtin.assert:
         that:
           - "dotfiles_testuser_aliasdir.stat.exists"
 
     - name: Assert that root symlinks exist
-      assert:
+      ansible.builtin.assert:
         that:
           - "item.stat.exists"
           - "item.stat.islnk"
@@ -75,7 +75,7 @@
       with_items: "{{ dotfiles_root_symlinks.results }}"
 
     - name: Assert that testuser symlinks exist
-      assert:
+      ansible.builtin.assert:
         that:
           - "item.stat.exists"
           - "item.stat.islnk"
@@ -84,7 +84,7 @@
       with_items: "{{ dotfiles_testuser_symlinks.results }}"
    
     - name: Assert that testuser alias files exist
-      assert:
+      ansible.builtin.assert:
         that:
           - "item.stat.exists"
           - "item.stat.islnk"
