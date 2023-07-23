@@ -1,6 +1,6 @@
 ---
 - name: Ensure dotfiles repository is cloned locally.
-  git:
+  ansible.builtin.git:
     repo: "{{ dotfiles_repo }}"
     dest: "{{ dotfiles_repo_local_destination }}"
     version: "{{ dotfiles_repo_version }}"
@@ -12,7 +12,7 @@
   register: gitstatus
   # become: false
 - name: Remove existing dotfiles file if a replacement is being linked.
-  file:
+  ansible.builtin.file:
     path: "{{ dotfiles_home }}/{{ item[0] }}"
     state: absent
   with_nested:
@@ -21,7 +21,7 @@
   when: gitstatus.changed
   become_user: "{{ item[1].UserName }}"
 - name: Create a .aliases directory
-  file:
+  ansible.builtin.file:
     path: "{{ dotfiles_home }}/.aliases"
     state: directory
     mode: 0755
@@ -31,7 +31,7 @@
     label: "{{ item.UserName }}"
   become_user: "{{ item.UserName }}"
 - name: Link aliases into .aliases directory | Work
-  file:
+  ansible.builtin.file:
     src: "{{ dotfiles_repo_local_destination }}/.aliases/{{ item[0] }}"
     dest: "{{ dotfiles_home }}/.aliases/{{ item[0] }}"
     state: link
@@ -42,7 +42,7 @@
   become_user: "{{ item[1].UserName }}"
   when: item[1].UserName != "root" and item[1].UserName == dotfiles_work_user
 - name: Link aliases into .aliases directory | Personal
-  file:
+  ansible.builtin.file:
     src: "{{ dotfiles_repo_local_destination }}/.aliases/{{ item[0] }}"
     dest: "{{ dotfiles_home }}/.aliases/{{ item[0] }}"
     state: link
@@ -53,7 +53,7 @@
   become_user: "{{ item[1].UserName }}"
   when: item[1].UserName != "root" and item[1].UserName != dotfiles_work_user
 - name: Link dotfiles into home directory
-  file:
+  ansible.builtin.file:
     src: "{{ dotfiles_repo_local_destination }}/{{ item[0] }}"
     dest: "{{ dotfiles_home }}/{{ item[0] }}"
     state: link

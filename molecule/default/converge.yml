@@ -6,11 +6,17 @@
   environment:
      GIT_SSL_NO_VERIFY: 'true'
 
-  # tasks:
-  #   - name: "Include dotfiles"
-  #     include_role:
-  #       name: "dotfiles"
   pre_tasks:
+    - name: Update cache
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 43200   # 12 hours
+
+    - name: Make sure git is installed
+      ansible.builtin.apt: 
+        name: git 
+        state: present
+
     - name: Create test user
       ansible.builtin.user:
         name: testuser
@@ -20,7 +26,6 @@
         shell: /bin/bash
         state: present
   roles:
-    - role: geerlingguy.git
     - role: jcpetro97.dotfiles
       vars:
         DotFiles:
