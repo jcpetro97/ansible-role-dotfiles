@@ -11,6 +11,7 @@
     label: "{{ item.UserName }}"
   register: gitstatus
   # become: false
+
 - name: Remove existing dotfiles file if a replacement is being linked.
   ansible.builtin.file:
     path: "{{ dotfiles_home }}/{{ item[0] }}"
@@ -20,6 +21,7 @@
     - "{{ DotFiles }}"
   when: gitstatus.changed
   become_user: "{{ item[1].UserName }}"
+
 - name: Create a .aliases directory
   ansible.builtin.file:
     path: "{{ dotfiles_home }}/.aliases"
@@ -30,6 +32,7 @@
   loop_control:
     label: "{{ item.UserName }}"
   become_user: "{{ item.UserName }}"
+
 - name: Link aliases into .aliases directory | Work
   ansible.builtin.file:
     src: "{{ dotfiles_repo_local_destination }}/.aliases/{{ item[0] }}"
@@ -41,6 +44,7 @@
     - "{{ DotFiles }}"
   become_user: "{{ item[1].UserName }}"
   when: item[1].UserName != "root" and item[1].UserName == dotfiles_work_user
+
 - name: Link aliases into .aliases directory | Personal
   ansible.builtin.file:
     src: "{{ dotfiles_repo_local_destination }}/.aliases/{{ item[0] }}"
@@ -52,6 +56,7 @@
     - "{{ DotFiles }}"
   become_user: "{{ item[1].UserName }}"
   when: item[1].UserName != "root" and item[1].UserName != dotfiles_work_user
+
 - name: Link dotfiles into home directory
   ansible.builtin.file:
     src: "{{ dotfiles_repo_local_destination }}/{{ item[0] }}"
