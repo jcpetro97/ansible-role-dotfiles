@@ -9,6 +9,7 @@ dotfiles_homedirfiles:
   - .gitconfig
   - .gitconfig-personal
   - .gitconfig-rit
+  - .tmux.conf
   - .vimrc
 dotfiles_aliasfiles_all:
   - bash_aliases_user
