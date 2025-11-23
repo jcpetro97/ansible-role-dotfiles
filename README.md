@@ -73,7 +73,7 @@ Example Playbook
 Molecule Testing
 ----------------
 
-This role includes a full Molecule test suite that simulates the deployment on Docker containers (Rocky Linux 9 and Ubuntu 24.04). The tests automatically handle the creation of a mock Git repository and a test user.
+This role includes a full Molecule test suite that simulates the deployment on Docker containers (Rocky Linux 9 and Ubuntu 24.04). The tests automatically handle the creation of a mock Git repository and a test user.  the **default** scenario is set up forusing **docker**, and the **podman** scenario is for using **podman**.
 
 **Prerequisites:**
 - Docker
@@ -83,10 +83,31 @@ This role includes a full Molecule test suite that simulates the deployment on D
 
 Running Tests - Docker
 
-`molecule test`
+```bash
+molecule test
+```
+
+To run the create/converge/verify steps individually:
+
+```bash
+molecule create 
+molecule converge 
+molecule verify 
+```
 
 Running Tests - Podman
-**Need to add this yet**
+
+```bash
+molecule test -s podman
+```
+
+To run the create/converge/verify steps individually:
+
+```bash
+molecule create -s podman
+molecule converge -s podman
+molecule verify -s podman
+```
 
 License
 -------
