@@ -77,7 +77,8 @@ This role includes a full Molecule test suite that simulates the deployment on D
 
 **Prerequisites:**
 - Docker
-- Molecule
+- Podman ( if using podman to test )
+- Molecule ( with the drivers for podman and/or docker )
 - Ansible Lint
 
 Running Tests - Docker
