@@ -8,12 +8,11 @@ Requirements
 
 - **Git**: Must be installed on the target system.
 - **ACL**: The `acl` package is recommended on the target system to allow Ansible to manage files as unprivileged users (`become_user`) without permission errors.
-- **Privilege Escalation**: The role requires `become: true` to manage users and filesystem permissions.
 
 Role Variables
 --------------
 
-- **dotfiles_repo_url** [default: `https://github.com/your-org/dotfiles.git`]: The HTTPS URL of the Git repository containing the dotfiles.
+- **dotfiles_repo_url** : The HTTPS URL of the Git repository containing the dotfiles.
 - **dotfiles_repo_version** [default: `main`]: The branch, tag, or commit hash to checkout.
 
 - **dotfiles_users** [default: `[]`]: A list of users to manage. Each item can contain:
@@ -21,11 +20,11 @@ Role Variables
     - `group` (Optional): The user's primary group. Defaults to the OS default.
     - `home` (Optional): The user's home directory. Defaults to `/home/<username>`. **Required** for the `root` user.
 
-- **dotfiles_files_common** [default: `['vimrc', 'gitconfig', 'bashrc']`]: List of files in the repo root to link to `~/.<filename>` for all users.
-- **dotfiles_files_extra** [default: `[]`]: Optional list of extra dotfiles to link (e.g., for specific groups of users).
+- **dotfiles_files_common** : List of files in the repo root to link to `~/.<filename>` for all users.
+- **dotfiles_files_extra** : Optional list of extra dotfiles to link (e.g., for specific groups of users).
 
-- **dotfiles_aliases_common** [default: `['aliases_common']`]: List of alias files in the repo root to link to `~/.aliases/<filename>`.
-- **dotfiles_aliases_extra** [default: `[]`]: Optional list of extra alias files.
+- **dotfiles_aliases_common** : List of alias files in the repo root to link to `~/.aliases/<filename>`.
+- **dotfiles_aliases_extra** : Optional list of extra alias files.
 
 [defaults/main.yml](defaults/main.yml)
 
@@ -37,8 +36,6 @@ None
 Example Playbook
 ----------------
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
-
 ```yaml
 ---
 - name: Configure Workstations
@@ -49,15 +46,14 @@ Including an example of how to use your role (for instance, with variables passe
     
     # Define standard files everyone gets
     dotfiles_files_common:
-      - "vimrc"
-      - "bashrc"
-      - "inputrc"
+      - ".vimrc"
+      - ".bashrc"
 
     # Define users
     dotfiles_users:
       # Standard User (Home defaults to /home/student)
-      - username: "student"
-        group: "students"
+      - username: "user1"
+        group: "user1"
       
       # Developer (Gets extra aliases)
       - username: "developer"
@@ -87,6 +83,9 @@ This role includes a full Molecule test suite that simulates the deployment on D
 Running Tests - Docker
 
 `molecule test`
+
+Running Tests - Podman
+**Need to add this yet**
 
 License
 -------
