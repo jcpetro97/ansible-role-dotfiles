@@ -1,7 +1,7 @@
 dotfiles
 ========
 
-Manage user dotfiles and aliases by cloning a centralized Git repository and symlinking files to user home directories.
+Manage user dotfiles and aliases by cloning a centralized Git repository and symlinking files to user home directories. This also assumes that all users included will be getting the files listed in all of the variables.
 
 Requirements
 ------------
