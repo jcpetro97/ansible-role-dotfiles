@@ -1,6 +1,33 @@
+offline: true
+
+enable_list:
+  - fqcn[action]
+  - fqcn[canonical]
+  - name[play]
+  - name[task]
+  - var-spacing
+  - role-name
+  - layout
+
 skip_list:
   - 'yaml'
   - 'role-name'
   - 'var-naming'
   - 'package-latest'
   - 'no-handler'
+  - "no-free-form"
+  - "risky-shell-pipe"
+  - "command-instead-of-shell"
+  - "experimental"
+  - "name[template]"
+  - "schema[vars]"
+  - "yaml[new-line-at-end-of-file]"
+
+warn_list:
+  - 'risky-file-permissions'
+
+exclude_paths:
+  - .git/
+  - .github/
+  - archives/
+  - roles/

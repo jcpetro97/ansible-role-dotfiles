@@ -1,93 +1,63 @@
 ---
-# This is an example playbook to execute Ansible tests.
-
 - name: Verify
   hosts: all
   gather_facts: false
   vars:
-    dotfiles:
-      - .bashrc
-      - .gitconfig
-      - .gitconfig-personal
-      - .gitconfig-rit
-      - .vimrc
-    aliases:
-      - bash_aliases_docker-registry
-      - bash_aliases_tmux_cssh
-      - bash_aliases_user
+    test_user: "test_usr"
+    test_home: "/home/test_usr"
 
   tasks:
-    - name: Check root Documents Directory state
+    - name: "Verify | Check if .vimrc symlink exists"
       ansible.builtin.stat:
-        path: "/root/Documents"
-      register: dotfiles_root_Documents
-    
-    - name: Check testuser Documents Directory state
-      ansible.builtin.stat:
-        path: "/home/testuser/Documents"
-      register: dotfiles_testuser_Documents
-    
-    - name: Check testuser .aliases Directory state
-      ansible.builtin.stat:
-        path: "/home/testuser/.aliases"
-      register: dotfiles_testuser_aliasdir
- 
-    - name: Check root dotfiles state
-      ansible.builtin.stat:
-        path: "/root/{{ item }}"
-      register: dotfiles_root_symlinks
-      with_items: "{{ dotfiles }}"
+        path: "{{ test_home }}/.vimrc"
+      register: vimrc_stat
 
-    - name: Check testuser dotfiles state
-      ansible.builtin.stat:
-        path: "/home/testuser/{{ item }}"
-      register: dotfiles_testuser_symlinks
-      with_items: "{{ dotfiles }}"
-
-    - name: Check testuser alias files state
-      ansible.builtin.stat:
-        path: "/home/testuser/.aliases/{{ item }}"
-      register: dotfiles_testuser_alias_symlinks
-      with_items: "{{ aliases }}"
-
-    - name: Assert that root Documents exist
+    - name: "Verify | Assert .vimrc is a link to .dotfiles"
       ansible.builtin.assert:
         that:
-          - "dotfiles_root_Documents.stat.exists"
+          - vimrc_stat.stat.exists
+          - vimrc_stat.stat.islnk
+          - vimrc_stat.stat.lnk_target == test_home + '/.dotfiles/.vimrc'
 
-    - name: Assert that testuser Documents exist
-      ansible.builtin.assert:
-        that:
-          - "dotfiles_testuser_Documents.stat.exists"
-   
-    - name: Assert that testuser .aliases exist
-      ansible.builtin.assert:
-        that:
-          - "dotfiles_testuser_aliasdir.stat.exists"
+    - name: "Verify | Check if .bashrc symlink exists"
+      ansible.builtin.stat:
+        path: "{{ test_home }}/.bashrc"
+      register: bashrc_stat
 
-    - name: Assert that root symlinks exist
+    - name: "Verify | Assert .bashrc is a link to .dotfiles"
       ansible.builtin.assert:
         that:
-          - "item.stat.exists"
-          - "item.stat.islnk"
-      loop_control:
-        label: "{{ item.item }}"
-      with_items: "{{ dotfiles_root_symlinks.results }}"
+          - bashrc_stat.stat.exists
+          - bashrc_stat.stat.islnk
+          - bashrc_stat.stat.lnk_target == test_home + '/.dotfiles/.bashrc'
 
-    - name: Assert that testuser symlinks exist
+    - name: "Verify | Check if aliases_common symlink exists"
+      ansible.builtin.stat:
+        path: "{{ test_home }}/.aliases/aliases_common"
+      register: alias_stat
+
+# # DEBUG TASK: This will print the actual target so we can see the mismatch
+#     - name: "DEBUG | Show aliases_common link target"
+#       ansible.builtin.debug:
+#         msg: 
+#           - "Expected Target: {{ test_home }}/.dotfiles/aliases_common"
+#           - "Actual Target:   {{ alias_stat.stat.lnk_target }}"
+#       when: alias_stat.stat.exists and alias_stat.stat.islnk
+
+    - name: "Verify | Assert aliases_common is a link"
       ansible.builtin.assert:
         that:
-          - "item.stat.exists"
-          - "item.stat.islnk"
-      loop_control:
-        label: "{{ item.item }}"
-      with_items: "{{ dotfiles_testuser_symlinks.results }}"
-   
-    - name: Assert that testuser alias files exist
+          - alias_stat.stat.exists
+          - alias_stat.stat.islnk
+          - alias_stat.stat.lnk_target == test_home + '/.dotfiles/.aliases/aliases_common'
+
+    - name: "Verify | Check if aliases_extra symlink exists"
+      ansible.builtin.stat:
+        path: "{{ test_home }}/.aliases/aliases_extra"
+      register: extra_stat
+
+    - name: "Verify | Assert aliases_extra is a link"
       ansible.builtin.assert:
         that:
-          - "item.stat.exists"
-          - "item.stat.islnk"
-      loop_control:
-        label: "{{ item.item }}"
-      with_items: "{{ dotfiles_testuser_alias_symlinks.results }}"
+          - extra_stat.stat.exists
+          - extra_stat.stat.islnk

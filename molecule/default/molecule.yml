@@ -1,22 +1,40 @@
 ---
 dependency:
   name: galaxy
+
 driver:
   name: docker
-lint: |
-  set -e
-  yamllint .
-  ansible-lint
 
 platforms:
-  - name: instance
-    image: "geerlingguy/docker-${MOLECULE_DISTRO:-ubuntu2004}-ansible:latest"
-    command: ${MOLECULE_DOCKER_COMMAND:-""}
-    volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup:ro
-    privileged: true
+  - name: instance-rocky9
+    image: jcpetro97/rocky9-ansible:latest
     pre_build_image: true
+    command: "sleep infinity"
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+    cgroupns: host
+    privileged: true
+
+  - name: instance-ubuntu2404
+    image: jcpetro97/ubuntu2404-ansible:latest
+    pre_build_image: true
+    command: "sleep infinity"
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+    cgroupns: host
+    privileged: true
+
 provisioner:
   name: ansible
-  playbooks:
-    converge: ${MOLECULE_PLAYBOOK:-converge.yml}
+  lint:
+    name: ansible-lint
+  env:
+    ANSIBLE_REMOTE_TMP: "/tmp"
+    ANSIBLE_ALLOW_WORLD_READABLE_TMPFILES: "True"
+    ANSIBLE_ROLES_PATH: "${MOLECULE_PROJECT_DIRECTORY}/.."
+    # 4. Performance & Stability
+    ANSIBLE_HOST_KEY_CHECKING: "False"
+    ANSIBLE_PIPELINING: "True"
+    ANSIBLE_DEPRECATION_WARNINGS: "False"
+verifier:
+  name: ansible

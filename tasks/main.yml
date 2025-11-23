@@ -1,69 +1,13 @@
 ---
-- name: Ensure dotfiles repository is cloned locally.
-  ansible.builtin.git:
-    repo: "{{ dotfiles_repo }}"
-    dest: "{{ dotfiles_repo_local_destination }}"
-    version: "{{ dotfiles_repo_version }}"
-    accept_hostkey: "{{ dotfiles_repo_accept_hostkey }}"
-  become_user: "{{ item.UserName }}"
-  with_items: "{{ DotFiles }}"
+- name: "Debian | Install prerequisites"
+  ansible.builtin.apt:
+    name: "acl"
+    state: present
+    update_cache: true
+  when: ansible_facts.os_family == 'Debian'
+
+- name: "{{ ansible_facts.os_family }} | Manage dotfiles for defined users"
+  ansible.builtin.include_tasks: manage_user.yml
+  loop: "{{ dotfiles_users }}"
   loop_control:
-    label: "{{ item.UserName }}"
-  register: gitstatus
-  # become: false
-
-- name: Remove existing dotfiles file if a replacement is being linked.
-  ansible.builtin.file:
-    path: "{{ dotfiles_home }}/{{ item[0] }}"
-    state: absent
-  with_nested:
-    - "{{ dotfiles_homedirfiles }}"
-    - "{{ DotFiles }}"
-  when: gitstatus.changed
-  become_user: "{{ item[1].UserName }}"
-
-- name: Create a .aliases directory
-  ansible.builtin.file:
-    path: "{{ dotfiles_home }}/.aliases"
-    state: directory
-    mode: 0755
-  when: item.UserName != "root"
-  with_items: "{{ DotFiles }}"
-  loop_control:
-    label: "{{ item.UserName }}"
-  become_user: "{{ item.UserName }}"
-
-- name: Link aliases into .aliases directory | Work
-  ansible.builtin.file:
-    src: "{{ dotfiles_repo_local_destination }}/.aliases/{{ item[0] }}"
-    dest: "{{ dotfiles_home }}/.aliases/{{ item[0] }}"
-    state: link
-    mode: 0644
-  with_nested:
-    - "{{ dotfiles_aliasfiles_all }}"
-    - "{{ DotFiles }}"
-  become_user: "{{ item[1].UserName }}"
-  when: item[1].UserName != "root" and item[1].UserName == dotfiles_work_user
-
-- name: Link aliases into .aliases directory | Personal
-  ansible.builtin.file:
-    src: "{{ dotfiles_repo_local_destination }}/.aliases/{{ item[0] }}"
-    dest: "{{ dotfiles_home }}/.aliases/{{ item[0] }}"
-    state: link
-    mode: 0644
-  with_nested:
-    - "{{ dotfiles_aliases_norit }}"
-    - "{{ DotFiles }}"
-  become_user: "{{ item[1].UserName }}"
-  when: item[1].UserName != "root" and item[1].UserName != dotfiles_work_user
-
-- name: Link dotfiles into home directory
-  ansible.builtin.file:
-    src: "{{ dotfiles_repo_local_destination }}/{{ item[0] }}"
-    dest: "{{ dotfiles_home }}/{{ item[0] }}"
-    state: link
-    mode: 0644
-  with_nested:
-    - "{{ dotfiles_homedirfiles }}"
-    - "{{ DotFiles }}"
-  become_user: "{{ item[1].UserName }}"
+    loop_var: "current_user"

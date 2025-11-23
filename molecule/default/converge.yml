@@ -1,33 +1,24 @@
 ---
 - name: Converge
   hosts: all
-  gather_facts: yes
-  become: true
-  environment:
-     GIT_SSL_NO_VERIFY: 'true'
+  vars:
+    # Point to the local repo built in prepare.yml
+    dotfiles_repo_url: "/tmp/mock_dotfiles/.git"
+    dotfiles_repo_version: "master" 
+    
+    # Define our test configuration
+    dotfiles_files_common:
+      - ".vimrc"
+      - ".bashrc"
 
-  pre_tasks:
-    - name: Update cache
-      ansible.builtin.apt:
-        update_cache: true
-        cache_valid_time: 43200   # 12 hours
+    dotfiles_aliases_common:
+      - "aliases_common"
 
-    - name: Make sure git is installed
-      ansible.builtin.apt: 
-        name: git 
-        state: present
+    dotfiles_aliases_extra:
+      - "aliases_extra"
 
-    - name: Create test user
-      ansible.builtin.user:
-        name: testuser
-        create_home: yes
-        comment: testuser
-        group: users
-        shell: /bin/bash
-        state: present
+    dotfiles_users:
+      - username: "test_usr"
+  
   roles:
-    - role: jcpetro97.dotfiles
-      vars:
-        DotFiles:
-          - UserName: "testuser"
-          - UserName: "root"
+    - role: dotfiles

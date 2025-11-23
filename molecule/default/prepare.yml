@@ -1,0 +1,79 @@
+---
+- name: Prepare test environment
+  hosts: all
+  gather_facts: true
+  vars:
+    mock_repo_path: "/tmp/mock_dotfiles"
+
+  tasks:
+    - name: "Prepare | Install dependencies (RedHat)"
+      ansible.builtin.dnf:
+        name:
+          - git
+          - acl
+          - sudo
+          - passwd
+          - shadow-utils
+          - authselect  # Required to fix PAM
+        state: present
+      when: ansible_os_family == "RedHat"
+
+    - name: "Prepare | Install dependencies (Debian)"
+      ansible.builtin.apt:
+        name:
+          - git
+          - acl
+          - sudo
+        update_cache: true
+        state: present
+      when: ansible_os_family == "Debian"
+
+    - name: "Prepare | Configure global git safe directory"
+      ansible.builtin.command:
+        cmd: "git config --system --add safe.directory '*'"
+
+    - name: "Prepare | Create test user 'test_usr'"
+      ansible.builtin.user:
+        name: test_usr
+        state: present
+        shell: /bin/bash
+        home: /home/test_usr
+        create_home: true
+
+    - name: "Prepare | Create mock repo directory"
+      ansible.builtin.file:
+        path: "{{ mock_repo_path }}"
+        state: directory
+        mode: '0755'
+
+    - name: "Prepare | Initialize git repo"
+      ansible.builtin.command:
+        cmd: "git init"
+        chdir: "{{ mock_repo_path }}"
+        creates: "{{ mock_repo_path }}/.git"
+
+    - name: "Prepare | Configure git user for commit"
+      ansible.builtin.command:
+        cmd: "{{ item }}"
+        chdir: "{{ mock_repo_path }}"
+      loop:
+        - "git config user.email 'molecule@example.com'"
+        - "git config user.name 'Molecule Test'"
+
+    - name: "Prepare | Create dummy dotfiles in mock repo"
+      ansible.builtin.copy:
+        dest: "{{ mock_repo_path }}/{{ item }}"
+        content: "# Mock content for {{ item }}"
+      loop:
+        - ".vimrc"
+        - ".bashrc"
+        - "aliases_common"
+        - "aliases_extra"
+
+    - name: "Prepare | Commit dummy files"
+      ansible.builtin.shell: |
+        git add .
+        git commit -m "Initial commit of mock dotfiles"
+      args:
+        chdir: "{{ mock_repo_path }}"
+      failed_when: false

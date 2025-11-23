@@ -1,0 +1,69 @@
+---
+- name: "{{ ansible_facts.os_family }} | Clone dotfiles repository for {{ current_user.username }}"
+  ansible.builtin.git:
+    dest: "{{ current_user.home | default('/home/' + current_user.username) }}/.dotfiles"
+    force: true
+    repo: "{{ dotfiles_repo_url }}"
+    update: true
+    version: "{{ dotfiles_repo_version }}"
+  become: true
+  become_user: "{{ current_user.username }}"
+
+- name: "{{ ansible_facts.os_family }} | Ensure .aliases directory exists for {{ current_user.username }}"
+  ansible.builtin.file:
+    group: "{{ current_user.group | default(omit) }}"
+    mode: "0755"
+    owner: "{{ current_user.username }}"
+    path: "{{ current_user.home | default('/home/' + current_user.username) }}/.aliases"
+    state: directory
+  become: true
+
+- name: "{{ ansible_facts.os_family }} | Link common aliases for {{ current_user.username }}"
+  ansible.builtin.file:
+    dest: "{{ current_user.home | default('/home/' + current_user.username) }}/.aliases/{{ item }}"
+    follow: false
+    force: true
+    group: "{{ current_user.group | default(omit) }}"
+    owner: "{{ current_user.username }}"
+    src: "{{ current_user.home | default('/home/' + current_user.username) }}/.dotfiles/.aliases/{{ item }}"
+    state: link
+  become: true
+  loop: "{{ dotfiles_aliases_common }}"
+
+- name: "{{ ansible_facts.os_family }} | Link extra aliases for {{ current_user.username }}"
+  ansible.builtin.file:
+    dest: "{{ current_user.home | default('/home/' + current_user.username) }}/.aliases/{{ item }}"
+    follow: false
+    force: true
+    group: "{{ current_user.group | default(omit) }}"
+    owner: "{{ current_user.username }}"
+    src: "{{ current_user.home | default('/home/' + current_user.username) }}/.dotfiles/.aliases/{{ item }}"
+    state: link
+  become: true
+  loop: "{{ dotfiles_aliases_extra }}"
+  when: dotfiles_aliases_extra | length > 0
+
+- name: "{{ ansible_facts.os_family }} | Link common dotfiles for {{ current_user.username }}"
+  ansible.builtin.file:
+    dest: "{{ current_user.home | default('/home/' + current_user.username) }}/{{ item }}"
+    follow: false
+    force: true
+    group: "{{ current_user.group | default(omit) }}"
+    owner: "{{ current_user.username }}"
+    src: "{{ current_user.home | default('/home/' + current_user.username) }}/.dotfiles/{{ item }}"
+    state: link
+  become: true
+  loop: "{{ dotfiles_files_common }}"
+
+- name: "{{ ansible_facts.os_family }} | Link extra dotfiles for {{ current_user.username }}"
+  ansible.builtin.file:
+    dest: "{{ current_user.home | default('/home/' + current_user.username) }}/{{ item }}"
+    follow: false
+    force: true
+    group: "{{ current_user.group | default(omit) }}"
+    owner: "{{ current_user.username }}"
+    src: "{{ current_user.home | default('/home/' + current_user.username) }}/.dotfiles/{{ item }}"
+    state: link
+  become: true
+  loop: "{{ dotfiles_files_extra }}"
+  when: dotfiles_files_extra | length > 0
