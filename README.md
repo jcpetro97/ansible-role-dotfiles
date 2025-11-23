@@ -42,7 +42,7 @@ Example Playbook
   hosts: workstations
   become: true
   vars:
-    dotfiles_repo_url: "[https://gitlab.example.com/ops/dotfiles.git](https://gitlab.example.com/ops/dotfiles.git)"
+    dotfiles_repo_url: "https://gitlab.example.com/ops/dotfiles.git"
     
     # Define standard files everyone gets
     dotfiles_files_common:
