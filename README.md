@@ -75,28 +75,21 @@ Including an example of how to use your role (for instance, with variables passe
     - role: dotfiles
 ```
 Molecule Testing
-This role includes a full Molecule test suite that simulates the deployment on Docker containers (Rocky Linux 9 and Ubuntu 22.04). The tests automatically handle the creation of a mock Git repository and a test user.
+----------------
 
-Prerequisites
-Docker
+This role includes a full Molecule test suite that simulates the deployment on Docker containers (Rocky Linux 9 and Ubuntu 24.04). The tests automatically handle the creation of a mock Git repository and a test user.
 
-Molecule (pip install molecule molecule-docker)
+**Prerequisites:**
+- Docker
+- Molecule
+- Ansible Lint
 
-Ansible Lint (pip install ansible-lint)
-
-Running Tests
-To run the full test sequence (lint, destroy, dependency, create, prepare, converge, verify, destroy):
+Running Tests - Docker
 
 `molecule test`
 
-Test Logic
-Prepare: Installs dependencies (git, acl, sudo), fixes PAM configuration for containers, creates a test user test_usr, and initializes a local "mock" Git repository in /tmp/mock_dotfiles.
-
-Converge: Runs the role against the container, pointing it to the local mock repo instead of an external URL.
-
-Verify: Checks that symlinks were created correctly in /home/test_usr and point to the expected targets inside .dotfiles/.
-
 License
+-------
 MIT
 
 Author Information
