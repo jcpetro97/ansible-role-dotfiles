@@ -23,8 +23,6 @@ dotfiles_files_extra: []
 
 dotfiles_aliases_common:
   - bash_aliases_user
-  - bash_aliases_rit
-  - bash_aliases_tmux_cssh
   - bash_aliases_misc
 
 # Optional extra alias files
