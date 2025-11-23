@@ -1,0 +1,24 @@
+---
+- name: Converge
+  hosts: all
+  vars:
+    # Point to the local repo built in prepare.yml
+    dotfiles_repo_url: "/tmp/mock_dotfiles/.git"
+    dotfiles_repo_version: "master" 
+    
+    # Define our test configuration
+    dotfiles_files_common:
+      - ".vimrc"
+      - ".bashrc"
+
+    dotfiles_aliases_common:
+      - "aliases_common"
+
+    dotfiles_aliases_extra:
+      - "aliases_extra"
+
+    dotfiles_users:
+      - username: "test_usr"
+  
+  roles:
+    - role: dotfiles
